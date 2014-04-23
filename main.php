@@ -1,3 +1,13 @@
+<?php
+/*
+ you can check if user is admin or ordinary user by checking value of $_SESSION['usergroup'] as follw:
+session_start();
+if ($_SESSION['usergroup']==0){ 
+}
+else if($_SESSION['usergroup']==1){
+} 
+ */
+?>
 <html>
    <head>
       <title>SMILE and Assessment wiki integration</title>
