@@ -39,8 +39,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
          <div align="center">
             <div> <b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
             <br />
-            Username: <input type="text" name="username" size="15" /><br />
-            Password: <input type="password" name="password" size="15" /><br />
+            Username: <input type="text" name="username" size="20" /><br />
+            Password: <input type="password" name="password" size="20" /><br />
             <a href="newUser.php">Create account</a>
             <p><input type="submit" value="Login" /></p>
          </div>
