@@ -1,12 +1,13 @@
 <?php
+require_once 'config.php';
 // get username, userpassword and user email from posted form
 $username     = mysql_real_escape_string($_POST['username']);
 $userpassword = mysql_real_escape_string($_POST['userpassword']);
 $useremail    = mysql_real_escape_string($_POST['useremail']);
 
 //connection to the database
-$dbhandle = mysql_connect('localhost', 'root', '') or die("Unable to connect to MySQL");
-$selected = mysql_select_db('sa_integration', $dbhandle) or die("Could not select examples");
+    $dbhandle = mysql_connect($DBserver, $DBuser, $DBpassword) or die("Unable to connect to MySQL");
+    $selected = mysql_select_db($DBname, $dbhandle) or die("Could not select examples");
 // insert new user to database
 $sql = 'INSERT INTO user ' . '(user_name,user_email, user_password) ' . 'VALUES ( "' . $username . '", "' . $useremail . '", "' . $userpassword . '")';
 
