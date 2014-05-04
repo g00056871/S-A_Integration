@@ -1,20 +1,23 @@
 <?php
 // check if form is submitted
+require_once 'config.php';
 if (isset($_POST['username']) && isset($_POST['password'])) {
     // check if user exists in database
-    $dbhandle = mysql_connect('localhost', 'root', '') or die("Unable to connect to MySQL");
-    $selected = mysql_select_db('sa_integration', $dbhandle) or die("Could not select examples");
+    $dbhandle = mysql_connect($DBserver, $DBuser, $DBpassword) or die("Unable to connect to MySQL");
+    $selected = mysql_select_db($DBname, $dbhandle) or die("Could not select examples");
     
     $username     = mysql_real_escape_string($_POST['username']);
     $userpassword = mysql_real_escape_string($_POST['password']);
     $sql          = "SELECT user_group FROM user WHERE user_name='" . $username . "' AND user_password='" . $userpassword . "'";
     $result = mysql_query($sql) or die('error');
+    
     if (mysql_num_rows($result) > 0) {
         // user exists, create session variable for user_group and redirect to main page
         $row = mysql_fetch_array($result);
         session_start();
         $_SESSION['usergroup'] = $row['user_group'];
-        header("Location: http://localhost/ourIntegratedSystem/main.php");
+        //no need to specify the path, because main.php is in the same directory as the index.php
+        header('Location: main.php');
     } else {
         echo "<div><br /><b> please check your name and password</b></div>";
     }
