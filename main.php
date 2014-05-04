@@ -1,4 +1,5 @@
 <?php
+require_once 'config.php';
 /*
  you can check if user is admin or ordinary user by checking value of $_SESSION['usergroup'] as follw:
 session_start();
@@ -19,7 +20,7 @@ else if($_SESSION['usergroup']==1){
          <div>
             <div> <b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
             <br />
-            <input type="button" id="fetchSMILE" value="Fetch SMILE questions" onclick='getSMILEQuestions()'/>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" id="fetchSMILE" value="Fetch SMILE questions" onclick='getSMILEQuestions("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
             <input type="button" id="pushAssess" value="Push questions to Assessment wiki"/>
          </div>
       </div>
@@ -45,8 +46,8 @@ else if($_SESSION['usergroup']==1){
         return xhr;
     }
 
-    function getSMILEQuestions() {
-        var file = 'http://192.168.1.3/SMILE/current/0.html';
+    function getSMILEQuestions(smileServer) {
+        var file = smileServer+'/SMILE/current/0.html';
         var request = getHTTPObject();
         if (request) {
             request.onreadystatechange = function () {
@@ -60,7 +61,6 @@ else if($_SESSION['usergroup']==1){
     function displayResponse(request) {
         if (request.readyState === 4) {
             if (request.status === 200 || request.status === 304) {
-                alert(request.responseText);
                 var div = document.createElement('div');
                 div.innerHTML = request.responseText;
                 var elements = div.childNodes;
