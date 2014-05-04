@@ -11,4 +11,4 @@ $path = "/ourIntegratedSystem";
 $DBserver         = "localhost";
 $DBname           = "sa_integration";
 $DBuser           = "root";
-$DBpassword       = "";
+$DBpassword       = "password";
