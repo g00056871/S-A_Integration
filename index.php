@@ -9,7 +9,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $userpassword = mysql_real_escape_string($_POST['password']);
     $sql          = "SELECT user_group FROM user WHERE user_name='" . $username . "' AND user_password='" . $userpassword . "'";
     $result = mysql_query($sql) or die('error');
-    
     if (mysql_num_rows($result) > 0) {
         // user exists, create session variable for user_group and redirect to main page
         $row = mysql_fetch_array($result);
