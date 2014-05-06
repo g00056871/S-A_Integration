@@ -21,7 +21,7 @@ else if($_SESSION['usergroup']==1){
             <div> <b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
             <br />
             <input type="button" id="fetchSMILE" value="Fetch SMILE questions" onclick='getSMILEQuestions("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" id="pushAssess" value="Push questions to Assessment wiki"/>
+            <input type="button" id="pushAssess" value="Push questions to Assessment wiki" onclick='pushQuestionsToAssess()'/>
             <input type="button" id="fetchAssess" value="fetch updated questions from Assessment wiki"/>
             <input type="button" id="updatesmile" value="update SMILE questions" onclick='updateSMILE("<?php echo $smileServer ?>")'/>
          </div>
@@ -120,6 +120,19 @@ else if($_SESSION['usergroup']==1){
             request.open("POST", "updateQ.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             request.send("fileurl="+file);
+        }
+    }
+    function pushQuestionsToAssess(){
+        // we need to fetch smile question from database 
+        // then create QTI xml question from it
+        var request = getHTTPObject();
+        if (request) {
+            request.onreadystatechange = function () {
+                
+            };
+            request.open("POST", "fetchQ.php", true);
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            request.send();
         }
     }
 </script>
