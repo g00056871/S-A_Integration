@@ -71,30 +71,45 @@ else if($_SESSION['usergroup']==1){
                 var question = elements[7].innerText.split('\n')[1];
                 var correctAnswer = 0;
                 var option1 = "";
-                if(elements[9].innerText.split('\n')[1].indexOf("(Correct Answer)") > -1){
-                    correctAnswer = 0;
-                    option1 = elements[9].innerHTML.split('\n')[1].split('<')[0].split(')')[1];
-                }
-                else { option1 = elements[9].innerText.split('\n')[1].split(')')[1];}
                 var option2 = "";
-                if(elements[9].innerText.split('\n')[3].indexOf("(Correct Answer)") > -1){
-                    correctAnswer = 1;
-                    option2 = elements[9].innerHTML.split('\n')[3].split('<')[0].split(')')[1];
-                }
-                else { option2 = elements[9].innerText.split('\n')[3].split(')')[1];}
                 var option3 = "";
-                if(elements[9].innerText.split('\n')[5].indexOf("(Correct Answer)") > -1){
-                    correctAnswer = 2;
-                    option3 = elements[9].innerHTML.split('\n')[5].split('<')[0].split(')')[1];
-                }
-                else { option3 = elements[9].innerText.split('\n')[5].split(')')[1];}
                 var option4 = "";
-                if(elements[9].innerText.split('\n')[7].indexOf("(Correct Answer)") > -1){
-                    correctAnswer = 3;
-                    option4 = elements[9].innerHTML.split('\n')[7].split('<')[0].split(')')[1];
+                var elementsArr = elements[9].innerHTML.split('\n');
+                for(var i=0;i<elementsArr.length;i++){
+                    var element = elementsArr[i];
+                    if(element.indexOf("(1)")>-1){
+                        if(element.indexOf("(Correct Answer)") > -1){
+                            option1 = element.split('<')[0].split(')')[1];
+                            correctAnswer = 0;}
+                        else {
+                            option1 = elements[9].innerText.split('\n')[1].split(')')[1];
+                        }
+                    }
+                    else if(element.indexOf("(2)")>-1){
+                        if(element.indexOf("(Correct Answer)") > -1){
+                            option2 = element.split('<')[0].split(')')[1];
+                            correctAnswer = 1;}
+                        else {
+                            option2 = elements[9].innerText.split('\n')[3].split(')')[1];
+                        }
+                    }
+                    else if(element.indexOf("(3)")>-1){
+                        if(element.indexOf("(Correct Answer)") > -1){
+                            option3 = element.split('<')[0].split(')')[1];
+                            correctAnswer = 2;}
+                        else {
+                            option3 = elements[9].innerText.split('\n')[5].split(')')[1];
+                        }
+                    }
+                    else if(element.indexOf("(4)")>-1){
+                        if(element.indexOf("(Correct Answer)") > -1){
+                            option4 = element.split('<')[0].split(')')[1];
+                            correctAnswer = 3;}
+                        else {
+                            option4 = elements[9].innerText.split('\n')[7].split(')')[1];
+                        }
+                    }   
                 }
-                else { option4 = elements[9].innerText.split('\n')[7].split(')')[1];}
-               
                 var request2 = getHTTPObject();
                 if (request2) {
                     request.onreadystatechange = function () {};

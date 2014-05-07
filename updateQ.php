@@ -1,10 +1,11 @@
 <?php
+require_once 'config.php';
 // update smile question
 // first fetch updated fields from our database then update question html file
 $smilefileurl1 = "c:/wamp/www/SMILE/current/0.html";
 $smilefileurl2 = "c:/wamp/www/SMILE/current/0_result.html";
-$dbhandle = mysql_connect('localhost', 'root', '') or die("Unable to connect to MySQL");
-$selected = mysql_select_db('sa_integration', $dbhandle) or die("Could not select examples");
+$dbhandle = mysql_connect($DBserver, $DBuser, $DBpassword) or die("Unable to connect to MySQL");
+$selected = mysql_select_db($DBname, $dbhandle) or die("Could not select examples");
 $qid = 0;
 $sql = "SELECT is_updated FROM smilequestions WHERE q_id='$qid'";
 $result = mysql_query($sql) or die('error');
