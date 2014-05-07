@@ -287,7 +287,7 @@ else if($_SESSION['usergroup']==1){
         if (request) {
             request.onreadystatechange = function () {
             };
-            request.open("POST", "Test.php", true);
+            request.open("POST", "fetchQ.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             request.send();
         }

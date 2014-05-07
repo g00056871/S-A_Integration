@@ -4,11 +4,13 @@
 
 #project(website) path
 $server = "http://localhost";
-$smileServer = "http://192.168.1.3";
+$smileServer = "http://10.25.154.255";
 $path = "/ourIntegratedSystem";
+$wikiPath = "http://localhost";
+$wikiServer = "/wiki";
 
 #database settings
 $DBserver         = "localhost";
 $DBname           = "sa_integration";
 $DBuser           = "root";
-$DBpassword       = "password";
+$DBpassword       = "";
