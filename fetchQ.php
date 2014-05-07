@@ -33,10 +33,10 @@ $XML = '<?xml version="1.0"?>
         <prompt>' . $question . '</prompt>
         <simpleChoice identifier="option_0">' . $option1 . '</simpleChoice>
         <simpleChoice identifier="option_1">' . $option2 . '</simpleChoice>';
-if ($option3 !== " ") {
+if ($option3 !== "") {
     $XML .= '<simpleChoice identifier="option_2">' . $option3 . '</simpleChoice>';
 }
-if ($option4 !== " ") {
+if ($option4 !== "") {
     $XML .= '<simpleChoice identifier="option_3">' . $option4 . '</simpleChoice>';
 }
 $XML .= '</choiceInteraction>
@@ -61,3 +61,18 @@ $XML .= '</choiceInteraction>
     </responseCondition>
   </responseProcessing>
 </assessmentItem>';
+$XML = trim($XML);
+
+$dbhandle2 = mysql_connect('localhost', 'root', 'password') or die("Unable to connect to MySQL");
+$selected2 = mysql_select_db('wikidb', $dbhandle2) or die("Could not select examples");
+
+$sql2 = "INSERT INTO page(page_id, page_namespace, page_title, page_is_redirect, page_is_new, page_latest, page_len, page_random, page_touched) VALUES (13,0,'Uncategorized.Q3',0,1,45,1718,'0.694533812339', '20140507102957')";
+$result2 = mysql_query($sql2) or die('error');
+
+$XML = 'Created page with "<?xml version="1.0"?> <assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ims..."';
+
+$sql3 = "INSERT INTO revision(rev_id, rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, rev_deleted, rev_len, rev_parent_id) VALUES (45,13,48,'Created page with',1,'Admin','20140507102957',0,0,1718,0)";
+$result3 = mysql_query($sql3) or die('error');
+
+$sql4 = "INSERT INTO text(old_id, old_text, old_flags) VALUES (45,$XML,'utf-8')";
+$result4 = mysql_query($sql4) or die('error');

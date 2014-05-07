@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=11&rvprop=timestamp|user|comment|content";
 /*
  you can check if user is admin or ordinary user by checking value of $_SESSION['usergroup'] as follw:
 session_start();
@@ -21,8 +22,8 @@ else if($_SESSION['usergroup']==1){
             <div> <b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
             <br />
             <input type="button" id="fetchSMILE" value="Fetch SMILE questions" onclick='getSMILEQuestions("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" id="pushAssess" value="Push questions to Assessment wiki" onclick='pushQuestionsToAssess()'/>
-            <input type="button" id="fetchAssess" value="fetch updated questions from Assessment wiki"/>
+            <input type="button" id="pushAssess" value="Push questions to Assessment Wiki" onclick='pushQuestionsToAssess()'/>
+            <input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki" onclick='setGetRequest("<?php echo $apiurl ?>")'/>
             <input type="button" id="updatesmile" value="update SMILE questions" onclick='updateSMILE("<?php echo $smileServer ?>")'/>
          </div>
       </div>
@@ -46,6 +47,150 @@ else if($_SESSION['usergroup']==1){
             }
         }
         return xhr;
+    }
+
+    function getHttpObject() {
+        var request = false;
+        //Create the HttpRequest Object
+        if (window.XMLHttpRequest) { // Mozilla, Safari,...
+            request = new XMLHttpRequest();
+            if (request.overrideMimeType) {
+                request.overrideMimeType('text/xml');
+            }
+        }
+        else if (window.ActiveXObject) { // IE
+            try 
+            {
+                request = new ActiveXObject("Msxml2.XMLHTTP");
+            } 
+            catch (e) {
+                try {
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (e) {}
+            }
+        }
+        if (!request) {
+            alert('Giving up :( Cannot create an XMLHTTP instance');
+            return false;
+        }
+        return request;
+    }
+
+    function setGetRequest(url)
+    {
+        var request= getHttpObject();
+
+        if(request)
+        {
+            request.onreadystatechange = function()
+            {
+                getContents(request);
+            };
+            request.open('GET', url, true);
+            request.send(null);
+        }
+    }
+
+    function getContents(request) {
+        if (request.readyState == 4) {
+            if (request.status == 200) {
+                var parseXml;
+
+                if (window.DOMParser) {
+                    parseXml = function(xmlStr) {
+                        return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
+                    };
+                } else if (typeof window.ActiveXObject != "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
+                    parseXml = function(xmlStr) {
+                        var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+                        xmlDoc.async = "false";
+                        xmlDoc.loadXML(xmlStr);
+                        return xmlDoc;
+                    };
+                } else {
+                    parseXml = function() { return null; }
+                }
+                
+                var xmlDoc = parseXml(request.responseText);
+                var pageID;
+                var pageTitle = "";
+                var correctResponseID = "";
+                var questionText = "";
+                var choices = [];
+                var choicesIDs = [];
+                if (xmlDoc) {
+                    //window.alert(xmlDoc.documentElement.getElementsByTagName("pre")[0].textContent.trim());
+                    var responseXML = parseXml(xmlDoc.documentElement.getElementsByTagName("pre")[0].textContent.trim());
+                    //window.alert(responseXML.documentElement.firstChild.textContent);
+                    pageID = responseXML.documentElement.getElementsByTagName("page")[0].getAttribute("pageid");
+                    pageTitle = responseXML.documentElement.getElementsByTagName("page")[0].getAttribute("title");
+                    
+                    
+                    var questionXML = parseXml(responseXML.documentElement.getElementsByTagName("rev")[0].textContent.trim());
+                    correctResponseID = questionXML.documentElement.getElementsByTagName("correctResponse")[0].getElementsByTagName("value")[0].textContent.trim();
+                    questionText = questionXML.documentElement.getElementsByTagName("itemBody")[0].getElementsByTagName("prompt")[0].textContent.trim();
+                    var choicesD = questionXML.documentElement.getElementsByTagName("itemBody")[0].getElementsByTagName("simpleChoice");
+                    for (var i=0;i<choicesD.length;i++)
+                    { 
+                        choices.push(choicesD[i].textContent.trim());
+                        choicesIDs.push(choicesD[i].getAttribute("identifier"));
+                    }
+                    
+                    //alert(responseXML.documentElement.getElementsByTagName("rev")[0].textContent.trim());
+                    //window.alert(xmlDoc.documentElement.nodeName);
+                }
+                if(pageID){
+                    //alert(pageID);
+                }
+                if(pageTitle)
+                {
+                    //alert(pageTitle);
+                }
+                if(correctResponseID)
+                {
+                    //alert(correctResponseID);
+                }
+                if(questionText)
+                {
+                    //alert(questionText);
+                }
+                if(choices && choicesIDs)
+                {
+                    //for (var i=0;i<choices.length;i++)
+                    //{ 
+                    //    alert(choicesIDs[i] + " " + choices[i]);
+                    //}
+                }
+                
+                var request = getHttpObject();
+                if (request) {
+                    request.onreadystatechange = function () {};
+                    
+                    request.open("POST", "UpdateDatabase.php", true);
+                    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    //questionText = "Paris is the Capital of France.";
+                    var updateParams = "q=" + questionText;
+                    var correctAnswer = 0;
+                    for (var i=0;i<choices.length;i++)
+                    { 
+                        updateParams += "&op" + (i + 1) + "=" + choices[i];
+                        if (correctResponseID === choicesIDs[i])
+                        {
+                            correctAnswer = i+1;
+                        }
+                    }
+                    
+                    updateParams += "&cor=" + correctAnswer + "&pid=" + pageID;
+                    //alert(updateParams);
+                    request.send(updateParams);
+                    //request.send("q=" + question + "&op1=" + option1 + "&op2=" + option2 + "&op3=" + option3 + "&op4=" + option4 + "&qid=" + qid);
+                }
+                //alert("Here, I should get the response text and update the smilequestions table in our database.");
+            } 
+            else {
+                alert('There was a problem with the request.');
+            }
+        }
     }
 
     function getSMILEQuestions(smileServer) {
@@ -138,14 +283,11 @@ else if($_SESSION['usergroup']==1){
         }
     }
     function pushQuestionsToAssess(){
-        // we need to fetch smile question from database 
-        // then create QTI xml question from it
-        var request = getHTTPObject();
+        var request = getHttpObject();
         if (request) {
             request.onreadystatechange = function () {
-                
             };
-            request.open("POST", "fetchQ.php", true);
+            request.open("POST", "Test.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             request.send();
         }
