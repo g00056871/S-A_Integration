@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=11&rvprop=timestamp|user|comment|content";
+$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=13&rvprop=timestamp|user|comment|content";
 /*
  you can check if user is admin or ordinary user by checking value of $_SESSION['usergroup'] as follw:
 session_start();

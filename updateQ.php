@@ -16,7 +16,7 @@ if ($row['is_updated'] == 'true') {
     $result = mysql_query($sql) or die('error');
     $row        = mysql_fetch_array($result);
     $question   = $row['question'];
-    $correctAns = $row['correctAns'];
+    $correctAns = $row['correctAns']-1;
     $op1        = $row['op1'];
     $op2        = $row['op2'];
     $op3        = $row['op3'];

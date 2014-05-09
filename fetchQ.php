@@ -66,13 +66,13 @@ $XML = trim($XML);
 $dbhandle2 = mysql_connect('localhost', 'root', '') or die("Unable to connect to MySQL");
 $selected2 = mysql_select_db('wikidb', $dbhandle2) or die("Could not select examples");
 
-$sql2 = "INSERT INTO page(page_id, page_namespace, page_title, page_is_redirect, page_is_new, page_latest, page_len, page_random, page_touched) VALUES (13,0,'Uncategorized.Q1',0,1,45,1718,'0.694533812339', '20140507102957')";
+$sql2 = "INSERT INTO page(page_id, page_namespace, page_title, page_is_redirect, page_is_new, page_latest, page_len, page_random, page_touched) VALUES (13,0,'Uncategorized.Q1',0,1,45,1800,'0.694533812339', '20140507132957')";
 $result2 = mysql_query($sql2) or die('error');
 
 $XML .= '[[Category:Uncategorized]]';
 
-$sql3 = "INSERT INTO revision(rev_id, rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, rev_deleted, rev_len, rev_parent_id) VALUES (45,13,48,'Created page with',1,'Admin','20140507102957',0,0,1718,0)";
+$sql3 = "INSERT INTO revision(rev_id, rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, rev_deleted, rev_len, rev_parent_id) VALUES (45,13,48,'Created page with',1,'Admin','20140507122957',0,0,1800,0)";
 $result3 = mysql_query($sql3) or die('error');
 
-$sql4 = "INSERT INTO text(old_id, old_text, old_flags) VALUES (45,'$XML','utf-8')";
+$sql4 = "INSERT INTO text(old_id, old_text, old_flags) VALUES (48,'$XML','utf-8')";
 $result4 = mysql_query($sql4) or die('error');
