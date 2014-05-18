@@ -192,86 +192,105 @@ else if($_SESSION['usergroup']==1){
             }
         }
     }
-
+    
+    /* This function will read all questions in SMILE and insert them to our database
+     * @returns {undefined}     */
     function getSMILEQuestions(smileServer) {
-        var file = smileServer+'/SMILE/current/0_result.html';
+    var sendParam = new Array();
+    processNext(0);
+
+      function processNext(fileIndex) {
+        //for (var i =0; fileExist; i++){
+        var file = smileServer + '/SMILE/current/' + fileIndex + '_result.html';
         var request = getHTTPObject();
         if (request) {
             request.onreadystatechange = function () {
-                displayResponse(request);
+                if (request.readyState === 4) {
+                    if (request.status === 200 || request.status === 304) {
+                        /******************************************/
+                        var div = document.createElement('div');
+                        div.innerHTML = request.responseText;
+                        var elements = div.childNodes;
+                        // get question id, question text and all options from the question html file in SMILE server
+                        var qid = fileIndex;
+                        var pageID = 13;
+                        var question = elements[7].innerText.split('\n')[1];
+                        var correctAnswer = 0;
+                        var option1 = "";
+                        var option2 = "";
+                        var option3 = "";
+                        var option4 = "";
+                        var elementsArr = elements[9].innerHTML.split('\n');
+                        for (var i = 0; i < elementsArr.length; i++) {
+                            var element = elementsArr[i];
+                            if (element.indexOf("(1)") > -1) {
+                                if (element.indexOf("(Correct Answer)") > -1) {
+                                    option1 = element.split('<')[0].split(')')[1];
+                                    correctAnswer = 0;
+                                } else {
+                                    option1 = elements[9].innerText.split('\n')[1].split(')')[1];
+                                }
+                            } else if (element.indexOf("(2)") > -1) {
+                                if (element.indexOf("(Correct Answer)") > -1) {
+                                    option2 = element.split('<')[0].split(')')[1];
+                                    correctAnswer = 1;
+                                } else {
+                                    option2 = elements[9].innerText.split('\n')[3].split(')')[1];
+                                }
+                            } else if (element.indexOf("(3)") > -1) {
+                                if (element.indexOf("(Correct Answer)") > -1) {
+                                    option3 = element.split('<')[0].split(')')[1];
+                                    correctAnswer = 2;
+                                } else {
+                                    option3 = elements[9].innerText.split('\n')[5].split(')')[1];
+                                }
+                            } else if (element.indexOf("(4)") > -1) {
+                                if (element.indexOf("(Correct Answer)") > -1) {
+                                    option4 = element.split('<')[0].split(')')[1];
+                                    correctAnswer = 3;
+                                } else {
+                                    option4 = elements[9].innerText.split('\n')[7].split(')')[1];
+                                }
+                            }
+                        }
+                        sendParam[fileIndex] = "pid=" + pageID + "&q=" + question + "&op1=" + option1 + "&op2=" + option2 + "&op3=" + option3 + "&op4=" + option4 + "&qid=" + qid + "&correctAns=" + correctAnswer;
+                        /******************************************/
+                        fileIndex++;
+                        processNext(fileIndex);
+                    } else {
+                        // finish reading files and request params are ready in sendParam
+                        // now we should send multiple requests to isnertQ
+                        insertSMILEQuestionsToDB(sendParam, fileIndex);
+                    }
+                }
             };
             request.open("GET", file, true);
             request.send(null);
         }
     }
+}
 
-    function displayResponse(request) {
-        if (request.readyState === 4) {
-            if (request.status === 200 || request.status === 304) {
-                var div = document.createElement('div');
-                div.innerHTML = request.responseText;
-                var elements = div.childNodes;
-                // get question id, question text and all options from the question html file in SMILE server
-                var qid = 0;
-                var question = elements[7].innerText.split('\n')[1];
-                var correctAnswer = 0;
-                var option1 = "";
-                var option2 = "";
-                var option3 = "";
-                var option4 = "";
-                var elementsArr = elements[9].innerHTML.split('\n');
-                for(var i=0;i<elementsArr.length;i++){
-                    var element = elementsArr[i];
-                    if(element.indexOf("(1)")>-1){
-                        if(element.indexOf("(Correct Answer)") > -1){
-                            option1 = element.split('<')[0].split(')')[1];
-                            correctAnswer = 0;}
-                        else {
-                            option1 = elements[9].innerText.split('\n')[1].split(')')[1];
-                        }
-                    }
-                    else if(element.indexOf("(2)")>-1){
-                        if(element.indexOf("(Correct Answer)") > -1){
-                            option2 = element.split('<')[0].split(')')[1];
-                            correctAnswer = 1;}
-                        else {
-                            option2 = elements[9].innerText.split('\n')[3].split(')')[1];
-                        }
-                    }
-                    else if(element.indexOf("(3)")>-1){
-                        if(element.indexOf("(Correct Answer)") > -1){
-                            option3 = element.split('<')[0].split(')')[1];
-                            correctAnswer = 2;}
-                        else {
-                            option3 = elements[9].innerText.split('\n')[5].split(')')[1];
-                        }
-                    }
-                    else if(element.indexOf("(4)")>-1){
-                        if(element.indexOf("(Correct Answer)") > -1){
-                            option4 = element.split('<')[0].split(')')[1];
-                            correctAnswer = 3;}
-                        else {
-                            option4 = elements[9].innerText.split('\n')[7].split(')')[1];
-                        }
-                    }   
-                }
-                var request2 = getHTTPObject();
-                if (request2) {
-                    request.onreadystatechange = function () {};
-                    // post all question details to insertQ.php file to be inserted into database
-                    request2.open("POST", "insertQ.php", true);
-                    request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    request2.send("q=" + question + "&op1=" + option1 + "&op2=" + option2 + "&op3=" + option3 + "&op4=" + option4 + "&qid=" + qid+"&correctAns="+correctAnswer);
-                }
-
-
-            }
+function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
+    for (var i = 0; i < fileNumbers; i++) {
+        var request2 = getHTTPObject();
+        if (request2) {
+            request2.onreadystatechange = function () {
+             
+            };
+            // post all question details to insertQ.php file to be inserted into database
+            request2.open("POST", "insertQ.php", true);
+            request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            request2.send(requestsParams[i]);
         }
     }
+}
     
+    /*
+    * this function will read updated SMILE questions from our database and update the corresponding questions in smile system
+    * it will finally delete questions from our database after reading them
+     */
     function updateSMILE(smileServer){
         // now update 0.html and 0_result.html files
-        var file = smileServer+'/SMILE/current/0.html';
         var request = getHTTPObject();
         if (request) {
             request.onreadystatechange = function () {
@@ -279,7 +298,7 @@ else if($_SESSION['usergroup']==1){
             };
             request.open("POST", "updateQ.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            request.send("fileurl="+file);
+            request.send(null);
         }
     }
     function pushQuestionsToAssess(){

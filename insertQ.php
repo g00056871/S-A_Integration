@@ -7,7 +7,7 @@ $op1      = mysql_real_escape_string($_POST['op1']);
 $op2      = mysql_real_escape_string($_POST['op2']);
 $op3      = mysql_real_escape_string($_POST['op3']);
 $op4      = mysql_real_escape_string($_POST['op4']);
-$pageID = 13;
+$pageID = $_POST['pid'];
 // insert SMILE question to our database
 $dbhandle = mysql_connect($DBserver, $DBuser, $DBpassword) or die("Unable to connect to MySQL");
 $selected = mysql_select_db($DBname, $dbhandle) or die("Could not select examples");
