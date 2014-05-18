@@ -25,6 +25,7 @@ else if($_SESSION['usergroup']==1){
             <input type="button" id="pushAssess" value="Push questions to Assessment Wiki" onclick='pushQuestionsToAssess()'/>
             <input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki" onclick='setGetRequest("<?php echo $apiurl ?>")'/>
             <input type="button" id="updatesmile" value="update SMILE questions" onclick='updateSMILE("<?php echo $smileServer ?>")'/>
+            <input type="button" id="pushToSMILE" value="push new quesitons to smile" onclick='pushSMILE("<?php echo $smileServer ?>")'/>
          </div>
       </div>
    </body>
@@ -311,4 +312,68 @@ function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
             request.send();
         }
     }
+    
+
+    /*
+    * this function will add user to SMILE (wiki user)
+    * then this wiki user will insert multiple questions to SMILE
+    * questions will be fetched from Assessment Wiki depending on topics specified from the teacher
+     */ 
+    function pushSMILE(smileServer) {
+        // add assess wiki user to SMILE with specific name and IP
+        var WikiUserName = "Wiki";
+        var WikiIP = "192.168.1.7";
+        var SMILEpushurl = smileServer + '/SMILE/pushmsg.php';
+        var JSONUser = {
+            "TYPE": "HAIL",
+            "IP": WikiIP,
+            "NAME": WikiUserName
+        };
+
+        var request = getHTTPObject();
+        if (request) {
+            request.onreadystatechange = function() {
+                if (request.readyState == 4) {
+                if (request.status == 200) {
+                    // push assess questions to SMILE
+                        var jsonQuestion = {"questions":[{
+                            "TYPE": "QUESTION",
+                            "NAME": "Wiki",
+                            "IP": "192.168.1.7",
+                            "Q": "capital of jordan is amman",
+                            "O1": "true",
+                            "O2": "false",
+                            "O3": "",
+                            "O4": "",
+                            "A": "1"
+                        },
+                        {"TYPE": "QUESTION",
+                            "NAME": "Wiki",
+                            "IP": "192.168.1.7",
+                            "Q": "capital of UAE is",
+                            "O1": "sharjah",
+                            "O2": "dubai",
+                            "O3": "abu dhabi",
+                            "O4": "",
+                            "A": "2"
+                        }]};
+                        var request2 = getHTTPObject();
+                        if (request2) {
+                            request2.onreadystatechange = function() {};
+                            for (var i=0;i<2;i++){
+                                request2.open("POST", SMILEpushurl, true);
+                                request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                request2.send("MSG=" + JSON.stringify(jsonQuestion.questions[i]));
+                        }
+                        }
+                    }
+                }
+            };
+
+            request.open("POST", SMILEpushurl, true);
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            request.send("MSG=" + JSON.stringify(JSONUser));
+        }
+    }
+    
 </script>
