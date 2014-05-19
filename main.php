@@ -1,32 +1,56 @@
 <?php
 require_once 'config.php';
 $apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=13&rvprop=timestamp|user|comment|content";
-/*
- you can check if user is admin or ordinary user by checking value of $_SESSION['usergroup'] as follw:
-session_start();
-if ($_SESSION['usergroup']==0){ 
-}
-else if($_SESSION['usergroup']==1){
-} 
- */
 ?>
+<!--
+this page has the following buttons with the following functionalities:
+1.fetchSMILEAndPushToWiki : this will fetch smile questions and insert them to our database, 
+then it will fetch them again from database and push them to assess wiki.
+2.fetchUpdatedQuestionsFromWikiAndUpdateSMILE: this will fetch updated questions from assess wiki and push them to our databse, 
+then it will read them from database and update SMILE files.
+3.fetchWikiQuestionsAndPushToSMILE: this will fetch specific questions from wiki (based on topics specified by teacher)
+then push them to SMILE session
+
+-->
 <html>
    <head>
-      <title>SMILE and Assessment wiki integration</title>
+      <title>Assessment Gateway</title>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
    </head>
    <body>
-      <div align="center">
-         <div>
-            <div> <b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
-            <br />
-            <input type="button" id="fetchSMILE" value="Fetch SMILE questions" onclick='getSMILEQuestions("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" id="pushAssess" value="Push questions to Assessment Wiki" onclick='pushQuestionsToAssess()'/>
-            <input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki" onclick='setGetRequest("<?php echo $apiurl ?>")'/>
-            <input type="button" id="updatesmile" value="update SMILE questions" onclick='updateSMILE("<?php echo $smileServer ?>")'/>
-            <input type="button" id="pushToSMILE" value="push new quesitons to smile" onclick='pushSMILE("<?php echo $smileServer ?>")'/>
+      <div style="text-align: center;">
+      <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
+      <br />
+      <br />
+      <div style="background: ; padding: 15px">
+            <style type="text/css" scoped>
+               td { font-family: verdana,arial; color: #064073; font-size: 1.00em; }
+               tr {text-align:center; }
+               input { border: 1px solid #CCCCCC; border-radius: 5px; color: #666666; display: inline-block; font-size: 1.00em;  padding: 5px; width: 100%; }
+               input[type="button"] { height: auto; width: auto; cursor: pointer; box-shadow: 0px 0px 5px #0361A8; margin-top: 10px; }
+               table.center { margin-left:auto; margin-right:auto; }
+               .error { font-family: verdana,arial; color: #D41313; font-size: 1.00em; }
+            </style>
+               <table class='center'>
+                  <tr>
+                     <td><input type="button" id="fetchSMILE" value="Fetch SMILE questions and push them to Assessment Wiki" onclick='fetchSMILEAndPushToWiki("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
+                     </td>
+                  </tr>
+                  <tr>
+                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update them in SMILE" onclick='fetchUpdatedQuestionsFromWikiAndUpdateSMILE("<?php echo $apiurl ?>")'/>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td><input type="button" id="pushToSMILE" value="fetch Wiki questions and push them to SMILE" onclick='fetchWikiQuestionsAndPushToSMILE("<?php echo $smileServer ?>")'/>
+                      </td>
+                  </tr>
+                  <tr>
+                     <td colspan=2>&nbsp;</td>
+                  </tr>
+               </table>
          </div>
+      </div>
       </div>
    </body>
 </html>
@@ -77,7 +101,7 @@ else if($_SESSION['usergroup']==1){
         return request;
     }
 
-    function setGetRequest(url)
+    function fetchUpdatedQuestionsFromWikiAndUpdateSMILE(url)
     {
         var request= getHttpObject();
 
@@ -165,7 +189,16 @@ else if($_SESSION['usergroup']==1){
                 
                 var request = getHttpObject();
                 if (request) {
-                    request.onreadystatechange = function () {};
+                    request.onreadystatechange = function () {
+                        if (request.readyState == 4) {
+                            if (request.status == 200) {
+                                alert ("operation completed successfully");
+                            }
+                            else {
+                                alert ("error while doing the operation");
+                            }
+                        }
+                    };
                     
                     request.open("POST", "UpdateDatabase.php", true);
                     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -195,13 +228,13 @@ else if($_SESSION['usergroup']==1){
     }
     
     /* This function will read all questions in SMILE and insert them to our database
+    * then it will read  them frm database and push them to Assess wiki
      * @returns {undefined}     */
-    function getSMILEQuestions(smileServer) {
+    function fetchSMILEAndPushToWiki(smileServer) {
     var sendParam = new Array();
     processNext(0);
 
       function processNext(fileIndex) {
-        //for (var i =0; fileExist; i++){
         var file = smileServer + '/SMILE/current/' + fileIndex + '_result.html';
         var request = getHTTPObject();
         if (request) {
@@ -276,8 +309,16 @@ function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
         var request2 = getHTTPObject();
         if (request2) {
             request2.onreadystatechange = function () {
+              if (request2.readyState == 4) {
+                if (request2.status == 200) {
+                    alert ("operation completed successfully");
              
-            };
+            }
+            else {
+                alert ("error while doing the operation");
+            }
+        }
+    };
             // post all question details to insertQ.php file to be inserted into database
             request2.open("POST", "insertQ.php", true);
             request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -290,9 +331,10 @@ function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
     * this function will read updated SMILE questions from our database and update the corresponding questions in smile system
     * it will finally delete questions from our database after reading them
      */
-    function updateSMILE(smileServer){
+    //function updateSMILE(smileServer){
+        // this part moved to updateDatabase.php
         // now update 0.html and 0_result.html files
-        var request = getHTTPObject();
+        /*var request = getHTTPObject();
         if (request) {
             request.onreadystatechange = function () {
                 
@@ -300,18 +342,19 @@ function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
             request.open("POST", "updateQ.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             request.send(null);
-        }
-    }
-    function pushQuestionsToAssess(){
-        var request = getHttpObject();
+        }*/
+    //}
+    //function pushQuestionsToAssess(){
+        // work moved to insertQ.php instead of fetchQ.php
+        /*var request = getHttpObject();
         if (request) {
             request.onreadystatechange = function () {
             };
             request.open("POST", "fetchQ.php", true);
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             request.send();
-        }
-    }
+        }*/
+    //}
     
 
     /*
@@ -319,7 +362,7 @@ function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
     * then this wiki user will insert multiple questions to SMILE
     * questions will be fetched from Assessment Wiki depending on topics specified from the teacher
      */ 
-    function pushSMILE(smileServer) {
+    function fetchWikiQuestionsAndPushToSMILE(smileServer) {
         // add assess wiki user to SMILE with specific name and IP
         var WikiUserName = "Wiki";
         var WikiIP = "192.168.1.7";
