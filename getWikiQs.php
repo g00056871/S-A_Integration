@@ -92,6 +92,19 @@ require_once 'config.php';
     }
     function get_categories(topic,qn)
     {
+        if (!qn)
+        {
+            alert("Please specify the number of questions");
+        }
+        else if(qn === '0')
+        {
+            alert("Please enter a positive number");
+        }
+        else if(topic === 'None')
+        {
+            alert("Please choose a topic");
+        }
+        else{
         var request= getHttpObject();
         if(request)
         {
@@ -104,7 +117,7 @@ require_once 'config.php';
             //alert(url);
             request.open('GET', url, true);
             request.send(null);
-        }
+        }}
     }
     function getQuestions(request) {
         if (request.readyState === 4) {
