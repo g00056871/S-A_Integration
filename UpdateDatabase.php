@@ -70,32 +70,32 @@ foreach ($rows as $row) {
                 $getQuestion = true;
             }
             if (strpos($line, '(1)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp1 = $part3;
             }
             if (strpos($line, '(2)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp2 = $part3;
             }
             if (strpos($line, '(3)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp3 = $part3;
             }
             if (strpos($line, '(4)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp4 = $part3;
             }
         }
         fclose($file);
         $newContent = str_replace($prevQuestion, $question, $prevContent);
-        $newContent = str_replace($prevOp1, $op1, $newContent);
-        $newContent = str_replace($prevOp2, $op2, $newContent);
-        $newContent = str_replace($prevOp3, $op3, $newContent);
-        $newContent = str_replace($prevOp4, $op4, $newContent);
+        $newContent = str_replace($prevOp1, '(1) '.$op1, $newContent);
+        $newContent = str_replace($prevOp2, '(2) '.$op2, $newContent);
+        $newContent = str_replace($prevOp3, '(3) '.$op3, $newContent);
+        $newContent = str_replace($prevOp4, '(4) '.$op4, $newContent);
         /* Write the data here. */
         $file       = fopen($smilefileurl1, "w");
         if (!$file) {
@@ -135,8 +135,8 @@ foreach ($rows as $row) {
                 $getQuestion = true;
             }
             if (strpos($line, '(1)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp1 = $part3;
                 if (strpos($line, '(Correct Answer)') !== false) {
                     //
@@ -144,8 +144,8 @@ foreach ($rows as $row) {
                 }
             }
             if (strpos($line, '(2)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp2 = $part3;
                 if (strpos($line, '(Correct Answer)') !== false) {
                     //
@@ -153,8 +153,8 @@ foreach ($rows as $row) {
                 }
             }
             if (strpos($line, '(3)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp3 = $part3;
                 if (strpos($line, '(Correct Answer)') !== false) {
                     //
@@ -162,8 +162,8 @@ foreach ($rows as $row) {
                 }
             }
             if (strpos($line, '(4)') !== false) {
-                list($part1, $part2) = explode(')', $line);
-                list($part3, $part4) = explode('<', $part2);
+                //list($part1, $part2) = explode(')', $line);
+                list($part3, $part4) = explode('<', $line);
                 $prevOp4 = $part3;
                 if (strpos($line, '(Correct Answer)') !== false) {
                     //
@@ -177,24 +177,24 @@ foreach ($rows as $row) {
         $newContent          = str_replace($prevQuestion, $question, $prevContent);
         $newContent          = str_replace($correctAnsIndicator, '', $newContent);
         if ($correctAns == 0) {
-            $newContent = str_replace($prevOp1, $op1 . $correctAnsIndicator, $newContent);
+            $newContent = str_replace($prevOp1, '(1) '.$op1 . $correctAnsIndicator, $newContent);
         } else {
-            $newContent = str_replace($prevOp1, $op1, $newContent);
+            $newContent = str_replace($prevOp1, '(1) '.$op1, $newContent);
         }
         if ($correctAns == 1) {
-            $newContent = str_replace($prevOp2, $op2 . $correctAnsIndicator, $newContent);
+            $newContent = str_replace($prevOp2, '(2) '.$op2 . $correctAnsIndicator, $newContent);
         } else {
-            $newContent = str_replace($prevOp2, $op2, $newContent);
+            $newContent = str_replace($prevOp2, '(2) '.$op2, $newContent);
         }
         if ($correctAns == 2) {
-            $newContent = str_replace($prevOp3, $op3 . $correctAnsIndicator, $newContent);
+            $newContent = str_replace($prevOp3, '(3) '.$op3 . $correctAnsIndicator, $newContent);
         } else {
-            $newContent = str_replace($prevOp3, $op3, $newContent);
+            $newContent = str_replace($prevOp3, '(3) '.$op3, $newContent);
         }
         if ($correctAns == 3) {
-            $newContent = str_replace($prevOp4, $op4 . $correctAnsIndicator, $newContent);
+            $newContent = str_replace($prevOp4, '(4) '.$op4 . $correctAnsIndicator, $newContent);
         } else {
-            $newContent = str_replace($prevOp4, $op4, $newContent);
+            $newContent = str_replace($prevOp4, '(4) '.$op4, $newContent);
         }
         // Write the data here. 
         $file = fopen($smilefileurl2, "w");
