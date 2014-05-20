@@ -4,10 +4,11 @@
 
 #project(website) path
 $server           = "http://localhost";
-$smileServer      = "http://10.25.154.255";
+$smileServer      = "http://localhost";
 $path             = "/ourIntegratedSystem";
 $wikiServer       = "http://localhost";
 $wikiPath         = "/wiki";
+$mediawikiPath    = "/mediawiki-1.18.2";
 
 #database settings
 $DBserver         = "localhost";
