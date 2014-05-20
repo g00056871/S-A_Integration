@@ -7,16 +7,17 @@ $op1      = mysql_real_escape_string($_POST['op1']);
 $op2      = mysql_real_escape_string($_POST['op2']);
 $op3      = mysql_real_escape_string($_POST['op3']);
 $op4      = mysql_real_escape_string($_POST['op4']);
-$pageID = $_POST['pid'];
+//$pageID = $_POST['pid'];
 // insert SMILE question to our database
 $dbhandle = mysql_connect($DBserver, $DBuser, $DBpassword) or die("Unable to connect to MySQL");
 $selected = mysql_select_db($DBname, $dbhandle) or die("Could not select examples");
 
-$sql = "INSERT INTO smilequestions(q_id, question, correctAns, op1,op2, op3, op4, page_id) VALUES ('$qid','$question', '$correctAnsIndex', '$op1', '$op2', '$op3', '$op4', '$pageID')";
+$sql = "INSERT INTO smilequestions(q_id, question, correctAns, op1,op2, op3, op4) VALUES ('$qid','$question', '$correctAnsIndex', '$op1', '$op2', '$op3', '$op4')";
 $result = mysql_query($sql) or die('error');
-
+mysql_close($dbhandle);
 // This is the moved code from fetchQ.php page which is requested 
 // from main page when we want pushing questions to assess wiki
+/*
 $qid = 0;
 $sql = "SELECT * FROM smilequestions WHERE q_id='$qid'";
 $result = mysql_query($sql) or die('error');
@@ -78,8 +79,8 @@ $XML .= '</choiceInteraction>
 </assessmentItem>';
 $XML = trim($XML);
 
-$dbhandle2 = mysql_connect('localhost', 'root', '') or die("Unable to connect to MySQL");
-$selected2 = mysql_select_db('wikidb', $dbhandle2) or die("Could not select examples");
+$dbhandle2 = mysql_connect($DBserver, $DBuser, $DBpassword) or die("Unable to connect to MySQL");
+$selected2 = mysql_select_db($DBnamewiki, $dbhandle2) or die("Could not select examples");
 
 $sql2 = "INSERT INTO page(page_id, page_namespace, page_title, page_is_redirect, page_is_new, page_latest, page_len, page_random, page_touched) VALUES (13,0,'Uncategorized.Q1',0,1,45,1800,'0.694533812339', '20140507132957')";
 $result2 = mysql_query($sql2) or die('error');
@@ -91,3 +92,7 @@ $result3 = mysql_query($sql3) or die('error');
 
 $sql4 = "INSERT INTO text(old_id, old_text, old_flags) VALUES (48,'$XML','utf-8')";
 $result4 = mysql_query($sql4) or die('error');
+
+mysql_close($dbhandle);
+mysql_close($dbhandle2);
+*/
