@@ -87,15 +87,15 @@ require_once 'config.php';
         var qn = document.getElementById('qn').value;
         if (topic === 'None')
         {
-            alert("Please specify the number of questions");
+            alert("Please choose a topic");
         }
         else if(!qn)
         {
-            alert("Please enter a positive number");
+            alert("Please specify the number of questions");
         }
         else if(qn === '0')
         {
-            alert("Please choose a topic");
+            alert("Please enter a positive number");
         }
         else{
         get_categories(topic,qn);
