@@ -156,7 +156,7 @@ require_once 'config.php';
                 }   
             }
             else {
-                alert('There was a problem with the request.');
+                alert('There was a problem with the request');
             }
         }
     }
@@ -239,7 +239,7 @@ require_once 'config.php';
             }
             else 
             {
-                alert('There was a problem with the request.');
+                alert('There was a problem with the request');
             }
         }
     }

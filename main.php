@@ -1,6 +1,5 @@
 <?php
 require_once 'config.php';
-//$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=13&rvprop=timestamp|user|comment|content";
 ?>
 <!--
 this page has the following buttons with the following functionalities:
@@ -219,7 +218,7 @@ then push them to SMILE session
                                 //alert ("operation completed successfully");
                             }
                             else {
-                                alert ("Error");
+                                alert ("There was a problem with the request");
                             }
                         }
                     };
@@ -246,7 +245,7 @@ then push them to SMILE session
                 //alert("Here, I should get the response text and update the smilequestions table in our database.");
             } 
             else {
-                alert('There was a problem with the request.');
+                alert('There was a problem with the request');
             }
         }
     }
@@ -344,7 +343,7 @@ then push them to SMILE session
                             //pushQuestionsToAssess();
                         }
                         else {
-                            alert ("Error");
+                            alert ("There was a problem with the request");
                         }
                     }
                 };
@@ -474,7 +473,7 @@ then push them to SMILE session
                     }
                     else 
                     {
-                        alert ("Error");
+                        alert ("There was a problem with the request");
                     }
                 }
             };
@@ -485,7 +484,7 @@ then push them to SMILE session
             request.send(null);
         }
         else
-            alert("cannot create request");
+            alert("There was a problem with the request");
     }
     
     /*
