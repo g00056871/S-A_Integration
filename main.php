@@ -24,9 +24,7 @@ then push them to SMILE session
    </head>
    <body>
       <div style="text-align: center;">
-      <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Welcome to Assessment Gateway</b></div>
-      <br />
-      <br />
+      <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Welcome to Assessment Gateway</b><br /><br /><br /><b>What do you like to do?</b></div>
       <div style="background: ; padding: 15px">
             <style type="text/css" scoped>
                td { font-family: verdana,arial; color: #064073; font-size: 1.00em; }
