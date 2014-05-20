@@ -124,7 +124,7 @@ then push them to SMILE session
                     request.send(null);
                 }
             }
-            alert ("Operation Completed Successfully");
+            alert ("Your Request was Completed Successfully");
         });
         
 //        var request= getHttpObject();
@@ -214,12 +214,12 @@ then push them to SMILE session
                 var request = getHttpObject();
                 if (request) {
                     request.onreadystatechange = function () {
-                        if (request.readyState == 4) {
-                            if (request.status == 200) {
+                        if (request.readyState === 4) {
+                            if (request.status === 200) {
                                 //alert ("operation completed successfully");
                             }
                             else {
-                                alert ("error while doing the operation");
+                                alert ("Error");
                             }
                         }
                     };
@@ -323,7 +323,7 @@ then push them to SMILE session
                             pushQuestionsToAssess();
                             
                             
-                            alert ("Operation Completed Successfully");
+                            alert ("Your Request was Completed Successfully");
                         }
                     }
                 };

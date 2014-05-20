@@ -86,6 +86,7 @@ require_once 'config.php';
         var topic = e.options[e.selectedIndex].value;
         var qn = document.getElementById('qn').value;
         get_categories(topic,qn);
+        alert("Your Request was Completed Successfully");
         //window.alert(topic);
         //window.alert(qn);
     }
