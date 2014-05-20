@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=13&rvprop=timestamp|user|comment|content";
+//$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=13&rvprop=timestamp|user|comment|content";
 ?>
 <!--
 this page has the following buttons with the following functionalities:
@@ -43,7 +43,7 @@ then push them to SMILE session
                      </td>
                   </tr>
                   <tr>
-                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update them in SMILE" onclick='fetchUpdatedQuestionsFromWikiAndUpdateSMILE("<?php echo $apiurl ?>")'/>
+                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update them in SMILE" onclick='fetchQuestionsFromWikiAndUpdateSMILE()'/>
                      </td>
                   </tr>
                   <tr>
@@ -106,19 +106,38 @@ then push them to SMILE session
         return request;
     }
 
-    function fetchUpdatedQuestionsFromWikiAndUpdateSMILE(url)
+    function fetchQuestionsFromWikiAndUpdateSMILE()
     {
-        var request= getHttpObject();
+        $.getJSON('getQuestionIDs.php', function(data){
+            var len = data.length;
+            for (var i = 0; i < len; i++) {
+                var url = "<?php echo $wikiServer.$wikiPath; ?>" + "/api.php?action=query&prop=revisions&pageids="+data[i].pid+"&rvprop=timestamp|user|comment|content";
+                var request= getHttpObject();
 
-        if(request)
-        {
-            request.onreadystatechange = function()
-            {
-                getContents(request);
-            };
-            request.open('GET', url, false);
-            request.send(null);
-        }
+                if(request)
+                {
+                    request.onreadystatechange = function()
+                    {
+                        getContents(request);
+                    };
+                    request.open('GET', url, false);
+                    request.send(null);
+                }
+            }
+            alert ("Operation Completed Successfully");
+        });
+        
+//        var request= getHttpObject();
+//
+//        if(request)
+//        {
+//            request.onreadystatechange = function()
+//            {
+//                getContents(request);
+//            };
+//            request.open('GET', url, false);
+//            request.send(null);
+//        }
     }
 
     function getContents(request) {
@@ -197,7 +216,7 @@ then push them to SMILE session
                     request.onreadystatechange = function () {
                         if (request.readyState == 4) {
                             if (request.status == 200) {
-                                alert ("operation completed successfully");
+                                //alert ("operation completed successfully");
                             }
                             else {
                                 alert ("error while doing the operation");
