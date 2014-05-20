@@ -220,7 +220,7 @@ require_once 'config.php';
                 
 
                 
-                fetchWikiQuestionsAndPushToSMILE(questionText,choices,correctResponseID+1,pageID,"<?php echo $smileServer ?>");
+                fetchWikiQuestionsAndPushToSMILE(questionText,choices,correctResponseID,pageID,"<?php echo $smileServer ?>");
                 
 //                var updateParams = "q=" + questionText;
 //                var correctAnswer = 0;
@@ -250,7 +250,6 @@ require_once 'config.php';
      */ 
     function fetchWikiQuestionsAndPushToSMILE(questionText,choices,correctResponseID,pageID,smileServer) {
         // add assess wiki user to SMILE with specific name and IP
-        alert(smileServer);
         var WikiUserName = "Wiki";
         var WikiIP = "192.168.1.7";
         var SMILEpushurl = smileServer + '/SMILE/pushmsg.php';
@@ -259,42 +258,44 @@ require_once 'config.php';
             "IP": WikiIP,
             "NAME": WikiUserName
         };
+        var correctAns = 1;
+        if(correctResponseID=='option_0'){
+            correctAns = 1;
+        }
+        else if(correctResponseID=='option_1'){
+            correctAns = 2;
+        }
+        else if(correctResponseID=='option_2'){
+            correctAns = 3;
+        }
+        if(correctResponseID=='option_3'){
+            correctAns = 4;
+        }
 
-        var request = getHTTPObject();
+        var request = getHttpObject();
         if (request) {
             request.onreadystatechange = function() {
                 if (request.readyState == 4) {
                 if (request.status == 200) {
                     // push assess questions to SMILE
-                        var jsonQuestion = {"questions":[{
+                        var jsonQuestion = {
                             "TYPE": "QUESTION",
                             "NAME": "Wiki",
                             "IP": "192.168.1.7",
-                            "Q": "capital of jordan is amman",
-                            "O1": "true",
-                            "O2": "false",
-                            "O3": "",
-                            "O4": "",
-                            "A": "1"
-                        },
-                        {"TYPE": "QUESTION",
-                            "NAME": "Wiki",
-                            "IP": "192.168.1.7",
-                            "Q": "capital of UAE is",
-                            "O1": "sharjah",
-                            "O2": "dubai",
-                            "O3": "abu dhabi",
-                            "O4": "",
-                            "A": "2"
-                        }]};
-                        var request2 = getHTTPObject();
+                            "Q": questionText,
+                            "O1": choices[0],
+                            "O2": choices[1],
+                            "O3": choices[2],
+                            "O4": choices[3],
+                            "A": correctAns
+                        };
+                        var request2 = getHttpObject();
                         if (request2) {
                             request2.onreadystatechange = function() {};
-                            for (var i=0;i<2;i++){
                                 request2.open("POST", SMILEpushurl, true);
                                 request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                                request2.send("MSG=" + JSON.stringify(jsonQuestion.questions[i]));
-                        }
+                                request2.send("MSG=" + JSON.stringify(jsonQuestion));
+                        
                         }
                     }
                 }
