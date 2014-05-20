@@ -116,14 +116,14 @@ then push them to SMILE session
             {
                 getContents(request);
             };
-            request.open('GET', url, true);
+            request.open('GET', url, false);
             request.send(null);
         }
     }
 
     function getContents(request) {
-        if (request.readyState == 4) {
-            if (request.status == 200) {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
                 var parseXml;
 
                 if (window.DOMParser) {
@@ -205,7 +205,7 @@ then push them to SMILE session
                         }
                     };
                     
-                    request.open("POST", "UpdateDatabase.php", true);
+                    request.open("POST", "UpdateDatabase.php", false);
                     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                     //questionText = "Paris is the Capital of France.";
                     var updateParams = "q=" + questionText;
@@ -299,7 +299,12 @@ then push them to SMILE session
                         } else {
                             // finish reading files and request params are ready in sendParam
                             // now we should send multiple requests to isnertQ
-                            insertSMILEQuestionsToDB(sendParam, fileIndex);
+                            //updatePageIDs('22','1');
+                            insertSMILEQuestionsToDB(sendParam, fileIndex,request);
+                            pushQuestionsToAssess();
+                            
+                            
+                            alert ("Operation Completed Successfully");
                         }
                     }
                 };
@@ -314,10 +319,10 @@ then push them to SMILE session
             var request2 = getHTTPObject();
             if (request2) {
                 request2.onreadystatechange = function () {
-                    if (request2.readyState == 4) {
-                        if (request2.status == 200) {
+                    if (request2.readyState === 4) {
+                        if (request2.status === 200) {
                             //alert ("Operation Completed Successfully");
-                            pushQuestionsToAssess();
+                            //pushQuestionsToAssess();
                         }
                         else {
                             alert ("Error");
@@ -325,7 +330,7 @@ then push them to SMILE session
                     }
                 };
                 // post all question details to insertQ.php file to be inserted into database
-                request2.open("POST", "insertQ.php", true);
+                request2.open("POST", "insertQ.php", false);
                 request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 request2.send(requestsParams[i]);
             }
@@ -335,6 +340,7 @@ then push them to SMILE session
     function pushQuestionsToAssess()
     {
         requestEditToken();
+        //alert("Successful");
     }
     function requestEditToken() 
     {
@@ -346,7 +352,7 @@ then push them to SMILE session
                 getEditToken(request);
             };
             var url = "<?php echo $wikiServer.$mediawikiPath; ?>" + "/api.php?action=query&prop=info|revisions&intoken=edit&titles=Main%20Page";
-            request.open('GET', url, true);
+            request.open('GET', url, false);
             request.send(null);
         }
     }
@@ -354,6 +360,7 @@ then push them to SMILE session
     function getEditToken(request) {
         if (request.readyState === 4) {
             if (request.status === 200) {
+                //request.abort();
                 var parseXml;
 
                 if (window.DOMParser) {
@@ -375,12 +382,19 @@ then push them to SMILE session
                 if (xmlDoc) {
                     var responseXML = parseXml(xmlDoc.documentElement.getElementsByTagName("pre")[0].textContent.trim());
                     var token = responseXML.documentElement.getElementsByTagName("page")[0].getAttribute("edittoken").trim();
-                    performEdit(token);
+                    
+                    $.getJSON('getQuestionDetails.php', function(data){
+
+                        var len = data.length;
+                        for (var i = 0; i< len; i++) {
+                            performEdit(token,data[i].qtext,data[i].qtitle,data[i].qid);
+                        }
+                    });      
                 }
             }
         }
     }
-    function performEdit(editToken)
+    function performEdit(editToken,qtext,qtitle,qid)
     {
         $.ajax({
         url: '<?php echo $wikiServer.$mediawikiPath; ?>' + '/api.php',
@@ -388,26 +402,25 @@ then push them to SMILE session
             format: 'json',
             action: 'edit',
             recreate: 'true',
-            title: 'Main Page Test 4',
-            text: 'Hello everyone!',
+            title: qtitle,
+            text: qtext,
             //createonly: 'true',
             //section: 'new',
-            summary: 'Hello World',
+            summary: 'New Question',
             //redirect: '',
             notminor: 'true',
             //contentformat: 'text/plain',
             //contentmodel: 'text',
             //appendtext: 'append',
             //prependtext: 'prepend',
-            //undo: 'ertr',
-            
             token: editToken
         },
         dataType: 'json',
         type: 'POST',
         success: function( data ) {
             if ( data && data.edit && data.edit.result === 'Success' ) {
-                alert('Successful');
+                updatePageIDs(data.edit.pageid,qid);
+                //alert('Successful');
                 //window.location.reload(); // reload page if edit was successful
             } else if ( data && data.error ) {
                 alert( 'Error: API returned error code "' + data.error.code + '": ' + data.error.info );
@@ -417,8 +430,43 @@ then push them to SMILE session
         },
         error: function( xhr ) {
             alert( 'Error: Request failed.' );
+            }
+        });
+    }
+    
+    function updatePageIDs(pageid,quesid)
+    {
+//        $.getJSON('updatePageIDs.php',{ pid: pageid, qid: quesid }, function(data){
+//            var len = data.length;
+//            for (var i = 0; i< len; i++) {
+//                alert(data[i].msg);
+//            }
+//        });
+        var request = getHttpObject();
+        if (request) {
+            request.onreadystatechange = function () 
+            {
+                if (request.readyState === 4)
+                {
+                    if (request.status === 200)
+                    {
+                        
+                        //alert("Successful");
+                    }
+                    else 
+                    {
+                        alert ("Error");
+                    }
+                }
+            };
+            var url = "updatePageIDs.php?pid="+pageid+"&qid="+quesid;
+            request.open("GET", url, false);
+            //request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //var params = "pid=" + pageid + "&qid=" + quesid;
+            request.send(null);
         }
-    });
+        else
+            alert("cannot create request");
     }
     
     /*
