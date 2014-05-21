@@ -44,14 +44,60 @@ require_once 'config.php';
             });
         </script>-->
     </head>
-    <body>
-        <div><b>Specify the topic and the number of questions you want to fetch:</b></div>
-        Topic: <select id="topics">
-            <option id="default" selected="selected">None</option>
-        </select>*This list shows the topics and the number of questions available for each topic<br>
-        Number of Questions: <input type="text" id="qn">*Limit is 500 questions<br>
-        <input type="button" value="Submit" onclick="do_stuff()">
-    </body>
+<body>
+  <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;">
+    
+    <div style="box-sizing: border-box; display: inline-block; width: auto; max-width: 650px; background-color: #FFFFFF; border: 2px solid #0361A8; border-radius: 5px; box-shadow: 0px 0px 8px #0361A8; margin: 50px auto auto;">
+      <div style="background: #0361A8; border-radius: 5px 5px 0px 0px; padding: 15px;">
+        <span style="font-family: verdana,arial; color: #D4D4D4; font-size: 1.00em; font-weight:bold;">
+          Specify the topic and the number of questions you want to fetch:
+        </span>
+      </div>
+      <div style="background: ; padding: 15px">
+        <style type="text/css" scoped>
+          td {text-align:left;font-family: verdana,arial;color: #064073;font-size: 1.00em;}
+          input {border: 1px solid #CCCCCC;border-radius: 5px;color: #666666;display: inline-block;font-size: 1.00em;padding: 5px;width: 50px;}
+          input[type="button"]{height: auto;width: auto;cursor: pointer;box-shadow: 0px 0px 5px #0361A8;float: right;margin-top: 10px;}
+          table.center {margin-left:auto;margin-right:auto;}
+          .error {font-family: verdana,arial;color: #D41313;font-size: 1.00em;}
+        </style>
+        <table>
+          <tr>
+            <td>
+              <b>
+                Topic:
+              </b>
+              
+              <select id="topics">
+                <option id="default" selected="selected">
+                  None
+                </option>
+              </select>
+              &nbsp;&nbsp;*This list shows the topics and the number of questions available for each topic
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              
+              <b>
+                Number of Questions: 
+              </b>
+              <input type="text" id="qn">
+              &nbsp;&nbsp;*Limit is 500 questions
+              <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="button" value="Submit" onclick="do_stuff()">
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
 </html>
 <script type="text/javascript">
     function getHttpObject() {
