@@ -15,7 +15,7 @@ $sql = "UPDATE smilequestions SET question='$question', correctAns='$correctAnsw
 //$sql = "INSERT INTO smilequestions(q_id, question, correctAns, op1,op2, op3, op4) VALUES ('$qid','$question', '$correctAnsIndex', '$op1', '$op2', '$op3', '$op4')";
 $result = mysql_query($sql) or die('error');
 
-// here we will read database and update MSILE files
+// here we will read database and update SMILE files
 // update smile question
 // first fetch updated fields from our database 
 // then update questions html files

@@ -38,7 +38,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
    </head>
    <!-- Begin Page Content -->
    <div style="text-align: center;">
-       <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
+       <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Welcome to Assessment Gateway</b></div>
       <div style="box-sizing: border-box; display: inline-block; width: auto; max-width: 480px; background-color: #FFFFFF; border: 2px solid #0361A8; border-radius: 5px; box-shadow: 0px 0px 8px #0361A8; margin: 50px auto auto;">
          <div style="background: #0361A8; border-radius: 5px 5px 0px 0px; padding: 15px;"><span style="font-family: verdana,arial; color: #D4D4D4; font-size: 1.00em; font-weight:bold;">Enter your login and password</span></div>
          <div style="background: ; padding: 15px">

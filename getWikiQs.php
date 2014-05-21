@@ -131,7 +131,22 @@ require_once 'config.php';
         var e = document.getElementById("topics");
         var topic = e.options[e.selectedIndex].value;
         var qn = document.getElementById('qn').value;
+        if (topic === 'None')
+        {
+            alert("Please choose a topic");
+        }
+        else if(!qn)
+        {
+            alert("Please specify the number of questions");
+        }
+        else if(qn === '0')
+        {
+            alert("Please enter a positive number");
+        }
+        else{
         get_categories(topic,qn);
+        alert("Your Request was Completed Successfully");
+    }
         //window.alert(topic);
         //window.alert(qn);
     }
@@ -201,7 +216,7 @@ require_once 'config.php';
                 }   
             }
             else {
-                alert('There was a problem with the request.');
+                alert('There was a problem with the request');
             }
         }
     }
@@ -284,7 +299,7 @@ require_once 'config.php';
             }
             else 
             {
-                alert('There was a problem with the request.');
+                alert('There was a problem with the request');
             }
         }
     }

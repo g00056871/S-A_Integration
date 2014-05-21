@@ -1,6 +1,5 @@
 <?php
 require_once 'config.php';
-$apiurl = $wikiServer.$wikiPath."/api.php?action=query&prop=revisions&pageids=13&rvprop=timestamp|user|comment|content";
 ?>
 <!--
 this page has the following buttons with the following functionalities:
@@ -14,15 +13,18 @@ then push them to SMILE session
 -->
 <html>
    <head>
-      <title>Assessment Gateway</title>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Assessment Gateway</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--Use either an offline copy of JQuery at the local server or load an online copy from Google-->
+        <!--<script type="text/javascript" src="jquery.js"></script>-->
+        <script type="text/javascript">
+            document.write("\<script src='//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js' type='text/javascript'>\<\/script>");
+        </script>
    </head>
    <body>
       <div style="text-align: center;">
-      <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Integrating SMILE questions into the editorial cycle of Assessment Wiki </b></div>
-      <br />
-      <br />
+      <div style="font-family: verdana,arial; color: #000099; font-size: 1.00em;"><br /><br /><b>Welcome to Assessment Gateway</b><br /><br /><br /><b>What do you like to do?</b></div>
       <div style="background: ; padding: 15px">
             <style type="text/css" scoped>
                td { font-family: verdana,arial; color: #064073; font-size: 1.00em; }
@@ -38,7 +40,7 @@ then push them to SMILE session
                      </td>
                   </tr>
                   <tr>
-                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update them in SMILE" onclick='fetchUpdatedQuestionsFromWikiAndUpdateSMILE("<?php echo $apiurl ?>")'/>
+                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update them in SMILE" onclick='fetchQuestionsFromWikiAndUpdateSMILE()'/>
                      </td>
                   </tr>
                   <tr>
@@ -101,24 +103,43 @@ then push them to SMILE session
         return request;
     }
 
-    function fetchUpdatedQuestionsFromWikiAndUpdateSMILE(url)
+    function fetchQuestionsFromWikiAndUpdateSMILE()
     {
-        var request= getHttpObject();
+        $.getJSON('getQuestionIDs.php', function(data){
+            var len = data.length;
+            for (var i = 0; i < len; i++) {
+                var url = "<?php echo $wikiServer.$wikiPath; ?>" + "/api.php?action=query&prop=revisions&pageids="+data[i].pid+"&rvprop=timestamp|user|comment|content";
+                var request= getHttpObject();
 
-        if(request)
-        {
-            request.onreadystatechange = function()
-            {
-                getContents(request);
-            };
-            request.open('GET', url, true);
-            request.send(null);
-        }
+                if(request)
+                {
+                    request.onreadystatechange = function()
+                    {
+                        getContents(request);
+                    };
+                    request.open('GET', url, false);
+                    request.send(null);
+                }
+            }
+            alert ("Your Request was Completed Successfully");
+        });
+        
+//        var request= getHttpObject();
+//
+//        if(request)
+//        {
+//            request.onreadystatechange = function()
+//            {
+//                getContents(request);
+//            };
+//            request.open('GET', url, false);
+//            request.send(null);
+//        }
     }
 
     function getContents(request) {
-        if (request.readyState == 4) {
-            if (request.status == 200) {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
                 var parseXml;
 
                 if (window.DOMParser) {
@@ -190,17 +211,17 @@ then push them to SMILE session
                 var request = getHttpObject();
                 if (request) {
                     request.onreadystatechange = function () {
-                        if (request.readyState == 4) {
-                            if (request.status == 200) {
-                                alert ("operation completed successfully");
+                        if (request.readyState === 4) {
+                            if (request.status === 200) {
+                                //alert ("operation completed successfully");
                             }
                             else {
-                                alert ("error while doing the operation");
+                                alert ("There was a problem with the request");
                             }
                         }
                     };
                     
-                    request.open("POST", "UpdateDatabase.php", true);
+                    request.open("POST", "UpdateDatabase.php", false);
                     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                     //questionText = "Paris is the Capital of France.";
                     var updateParams = "q=" + questionText;
@@ -222,7 +243,7 @@ then push them to SMILE session
                 //alert("Here, I should get the response text and update the smilequestions table in our database.");
             } 
             else {
-                alert('There was a problem with the request.');
+                alert('There was a problem with the request');
             }
         }
     }
@@ -234,98 +255,235 @@ then push them to SMILE session
     var sendParam = new Array();
     processNext(0);
 
-      function processNext(fileIndex) {
-        var file = smileServer + '/SMILE/current/' + fileIndex + '_result.html';
-        var request = getHTTPObject();
-        if (request) {
-            request.onreadystatechange = function () {
-                if (request.readyState === 4) {
-                    if (request.status === 200 || request.status === 304) {
-                        /******************************************/
-                        var div = document.createElement('div');
-                        div.innerHTML = request.responseText;
-                        var elements = div.childNodes;
-                        // get question id, question text and all options from the question html file in SMILE server
-                        var qid = fileIndex;
-                        //var pageID = 13;
-                        var question = elements[7].innerText.split('\n')[1];
-                        var correctAnswer = 0;
-                        var option1 = "";
-                        var option2 = "";
-                        var option3 = "";
-                        var option4 = "";
-                        var elementsArr = elements[9].innerHTML.split('\n');
-                        for (var i = 0; i < elementsArr.length; i++) {
-                            var element = elementsArr[i];
-                            if (element.indexOf("(1)") > -1) {
-                                if (element.indexOf("(Correct Answer)") > -1) {
-                                    option1 = element.split('<')[0].split(')')[1];
-                                    correctAnswer = 0;
-                                } else {
-                                    option1 = elements[9].innerText.split('\n')[1].split(')')[1];
-                                }
-                            } else if (element.indexOf("(2)") > -1) {
-                                if (element.indexOf("(Correct Answer)") > -1) {
-                                    option2 = element.split('<')[0].split(')')[1];
-                                    correctAnswer = 1;
-                                } else {
-                                    option2 = elements[9].innerText.split('\n')[3].split(')')[1];
-                                }
-                            } else if (element.indexOf("(3)") > -1) {
-                                if (element.indexOf("(Correct Answer)") > -1) {
-                                    option3 = element.split('<')[0].split(')')[1];
-                                    correctAnswer = 2;
-                                } else {
-                                    option3 = elements[9].innerText.split('\n')[5].split(')')[1];
-                                }
-                            } else if (element.indexOf("(4)") > -1) {
-                                if (element.indexOf("(Correct Answer)") > -1) {
-                                    option4 = element.split('<')[0].split(')')[1];
-                                    correctAnswer = 3;
-                                } else {
-                                    option4 = elements[9].innerText.split('\n')[7].split(')')[1];
+        function processNext(fileIndex) {
+            var file = smileServer + '/SMILE/current/' + fileIndex + '_result.html';
+            var request = getHTTPObject();
+            if (request) {
+                request.onreadystatechange = function () {
+                    if (request.readyState === 4) {
+                        if (request.status === 200 || request.status === 304) {
+                            /******************************************/
+                            var div = document.createElement('div');
+                            div.innerHTML = request.responseText;
+                            var elements = div.childNodes;
+                            // get question id, question text and all options from the question html file in SMILE server
+                            var qid = fileIndex;
+                            //var pageID = 13;
+                            var question = elements[7].innerText.split('\n')[1];
+                            var correctAnswer = 0;
+                            var option1 = "";
+                            var option2 = "";
+                            var option3 = "";
+                            var option4 = "";
+                            var elementsArr = elements[9].innerHTML.split('\n');
+                            for (var i = 0; i < elementsArr.length; i++) {
+                                var element = elementsArr[i];
+                                if (element.indexOf("(1)") > -1) {
+                                    if (element.indexOf("(Correct Answer)") > -1) {
+                                        option1 = element.split('<')[0].split(')')[1];
+                                        correctAnswer = 0;
+                                    } else {
+                                        option1 = elements[9].innerText.split('\n')[1].split(')')[1];
+                                    }
+                                } else if (element.indexOf("(2)") > -1) {
+                                    if (element.indexOf("(Correct Answer)") > -1) {
+                                        option2 = element.split('<')[0].split(')')[1];
+                                        correctAnswer = 1;
+                                    } else {
+                                        option2 = elements[9].innerText.split('\n')[3].split(')')[1];
+                                    }
+                                } else if (element.indexOf("(3)") > -1) {
+                                    if (element.indexOf("(Correct Answer)") > -1) {
+                                        option3 = element.split('<')[0].split(')')[1];
+                                        correctAnswer = 2;
+                                    } else {
+                                        option3 = elements[9].innerText.split('\n')[5].split(')')[1];
+                                    }
+                                } else if (element.indexOf("(4)") > -1) {
+                                    if (element.indexOf("(Correct Answer)") > -1) {
+                                        option4 = element.split('<')[0].split(')')[1];
+                                        correctAnswer = 3;
+                                    } else {
+                                        option4 = elements[9].innerText.split('\n')[7].split(')')[1];
+                                    }
                                 }
                             }
+                            sendParam[fileIndex] = "q=" + question + "&op1=" + option1 + "&op2=" + option2 + "&op3=" + option3 + "&op4=" + option4 + "&qid=" + qid + "&correctAns=" + correctAnswer;
+                            /******************************************/
+                            fileIndex++;
+                            processNext(fileIndex);
+                        } else {
+                            // finish reading files and request params are ready in sendParam
+                            // now we should send multiple requests to isnertQ
+                            //updatePageIDs('22','1');
+                            insertSMILEQuestionsToDB(sendParam, fileIndex,request);
+                            pushQuestionsToAssess();
+                            
+                            
+                            alert ("Your Request was Completed Successfully");
                         }
-                        sendParam[fileIndex] = "q=" + question + "&op1=" + option1 + "&op2=" + option2 + "&op3=" + option3 + "&op4=" + option4 + "&qid=" + qid + "&correctAns=" + correctAnswer;
-                        /******************************************/
-                        fileIndex++;
-                        processNext(fileIndex);
-                    } else {
-                        // finish reading files and request params are ready in sendParam
-                        // now we should send multiple requests to isnertQ
-                        insertSMILEQuestionsToDB(sendParam, fileIndex);
                     }
-                }
+                };
+                request.open("GET", file, false);
+                request.send(null);
+            }
+        }
+    }
+
+    function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
+        for (var i = 0; i < fileNumbers; i++) {
+            var request2 = getHTTPObject();
+            if (request2) {
+                request2.onreadystatechange = function () {
+                    if (request2.readyState === 4) {
+                        if (request2.status === 200) {
+                            //alert ("Operation Completed Successfully");
+                            //pushQuestionsToAssess();
+                        }
+                        else {
+                            alert ("There was a problem with the request");
+                        }
+                    }
+                };
+                // post all question details to insertQ.php file to be inserted into database
+                request2.open("POST", "insertQ.php", false);
+                request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                request2.send(requestsParams[i]);
+            }
+        }
+    }
+    
+    function pushQuestionsToAssess()
+    {
+        requestEditToken();
+        //alert("Successful");
+    }
+    function requestEditToken() 
+    {
+        var request= getHttpObject();
+        if(request)
+        {
+            request.onreadystatechange = function()
+            {
+                getEditToken(request);
             };
-            request.open("GET", file, true);
+            var url = "<?php echo $wikiServer.$mediawikiPath; ?>" + "/api.php?action=query&prop=info|revisions&intoken=edit&titles=Main%20Page";
+            request.open('GET', url, false);
             request.send(null);
         }
     }
-}
 
-function insertSMILEQuestionsToDB(requestsParams, fileNumbers) {
-    for (var i = 0; i < fileNumbers; i++) {
-        var request2 = getHTTPObject();
-        if (request2) {
-            request2.onreadystatechange = function () {
-              if (request2.readyState == 4) {
-                if (request2.status == 200) {
-                    alert ("operation completed successfully");
-             
+    function getEditToken(request) {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                //request.abort();
+                var parseXml;
+
+                if (window.DOMParser) {
+                    parseXml = function(xmlStr) {
+                        return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
+                    };
+                } else if (typeof window.ActiveXObject != "undefined" && new window.ActiveXObject("Microsoft.XMLDOM")) {
+                    parseXml = function(xmlStr) {
+                        var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+                        xmlDoc.async = "false";
+                        xmlDoc.loadXML(xmlStr);
+                        return xmlDoc;
+                    };
+                } else {
+                    parseXml = function() { return null; }
+                }
+                
+                var xmlDoc = parseXml(request.responseText);
+                if (xmlDoc) {
+                    var responseXML = parseXml(xmlDoc.documentElement.getElementsByTagName("pre")[0].textContent.trim());
+                    var token = responseXML.documentElement.getElementsByTagName("page")[0].getAttribute("edittoken").trim();
+                    
+                    $.getJSON('getQuestionDetails.php', function(data){
+
+                        var len = data.length;
+                        for (var i = 0; i< len; i++) {
+                            performEdit(token,data[i].qtext,data[i].qtitle,data[i].qid);
+                        }
+                    });      
+                }
             }
-            else {
-                alert ("error while doing the operation");
-            }
-        }
-    };
-            // post all question details to insertQ.php file to be inserted into database
-            request2.open("POST", "insertQ.php", true);
-            request2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            request2.send(requestsParams[i]);
         }
     }
-}
+    function performEdit(editToken,qtext,qtitle,qid)
+    {
+        $.ajax({
+        url: '<?php echo $wikiServer.$mediawikiPath; ?>' + '/api.php',
+        data: {
+            format: 'json',
+            action: 'edit',
+            recreate: 'true',
+            title: qtitle,
+            text: qtext,
+            //createonly: 'true',
+            //section: 'new',
+            summary: 'New Question',
+            //redirect: '',
+            notminor: 'true',
+            //contentformat: 'text/plain',
+            //contentmodel: 'text',
+            //appendtext: 'append',
+            //prependtext: 'prepend',
+            token: editToken
+        },
+        dataType: 'json',
+        type: 'POST',
+        success: function( data ) {
+            if ( data && data.edit && data.edit.result === 'Success' ) {
+                updatePageIDs(data.edit.pageid,qid);
+                //alert('Successful');
+                //window.location.reload(); // reload page if edit was successful
+            } else if ( data && data.error ) {
+                alert( 'Error: API returned error code "' + data.error.code + '": ' + data.error.info );
+            } else {
+                alert( 'Error: Unknown result from API.' );
+            }
+        },
+        error: function( xhr ) {
+            alert( 'Error: Request failed.' );
+            }
+        });
+    }
+    
+    function updatePageIDs(pageid,quesid)
+    {
+//        $.getJSON('updatePageIDs.php',{ pid: pageid, qid: quesid }, function(data){
+//            var len = data.length;
+//            for (var i = 0; i< len; i++) {
+//                alert(data[i].msg);
+//            }
+//        });
+        var request = getHttpObject();
+        if (request) {
+            request.onreadystatechange = function () 
+            {
+                if (request.readyState === 4)
+                {
+                    if (request.status === 200)
+                    {
+                        
+                        //alert("Successful");
+                    }
+                    else 
+                    {
+                        alert ("There was a problem with the request");
+                    }
+                }
+            };
+            var url = "updatePageIDs.php?pid="+pageid+"&qid="+quesid;
+            request.open("GET", url, false);
+            //request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //var params = "pid=" + pageid + "&qid=" + quesid;
+            request.send(null);
+        }
+        else
+            alert("There was a problem with the request");
+    }
     
     /*
     * this function will read updated SMILE questions from our database and update the corresponding questions in smile system
