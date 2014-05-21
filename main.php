@@ -36,15 +36,15 @@ then push them to SMILE session
             </style>
                <table class='center'>
                   <tr>
-                     <td><input type="button" id="fetchSMILE" value="Fetch SMILE questions and push them to Assessment Wiki" onclick='fetchSMILEAndPushToWiki("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
+                     <td><input type="button" id="fetchSMILE" value="Fetch SMILE questions and push to Assessment Wiki" onclick='fetchSMILEAndPushToWiki("<?php echo $smileServer ?>")'/>&nbsp;&nbsp;&nbsp;&nbsp;
                      </td>
                   </tr>
                   <tr>
-                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update them in SMILE" onclick='fetchQuestionsFromWikiAndUpdateSMILE()'/>
+                     <td><input type="button" id="fetchAssess" value="Fetch updated questions from Assessment Wiki and update SMILE" onclick='fetchQuestionsFromWikiAndUpdateSMILE()'/>
                      </td>
                   </tr>
                   <tr>
-                     <td><input type="button" id="pushToSMILE" value="Fetch Wiki questions and push them to SMILE" onclick=' window.location = "getWikiQs.php";'/>
+                     <td><input type="button" id="pushToSMILE" value="Fetch Wiki questions and push to SMILE" onclick=' window.location = "getWikiQs.php";'/>
                       </td>
                   </tr>
                   <tr>
