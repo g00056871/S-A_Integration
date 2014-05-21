@@ -56,12 +56,21 @@ require_once 'config.php';
       <div style="background: ; padding: 15px">
         <style type="text/css" scoped>
           td {text-align:left;font-family: verdana,arial;color: #064073;font-size: 1.00em;}
-          input {border: 1px solid #CCCCCC;border-radius: 5px;color: #666666;display: inline-block;font-size: 1.00em;padding: 5px;width: 50px;}
+          input {border: 1px solid #CCCCCC;border-radius: 5px;color: #666666;display: inline-block;font-size: 1.00em;padding: 5px;}
           input[type="button"]{height: auto;width: auto;cursor: pointer;box-shadow: 0px 0px 5px #0361A8;float: right;margin-top: 10px;}
           table.center {margin-left:auto;margin-right:auto;}
           .error {font-family: verdana,arial;color: #D41313;font-size: 1.00em;}
         </style>
         <table>
+            <tr>
+            <td>
+                <b>
+                SMILE user name :
+                </b>
+                <input type="text" id="smileusername">
+                &nbsp;&nbsp;*This name will be the name of the Wiki's questions owner inside SMILE session
+           </td>
+          </tr>
           <tr>
             <td>
               <b>
@@ -83,7 +92,7 @@ require_once 'config.php';
               <b>
                 Number of Questions: 
               </b>
-              <input type="text" id="qn">
+                <input type="text" id="qn" style="width: 50px;">
               &nbsp;&nbsp;*Limit is 500 questions
               <br>
             </td>
@@ -310,14 +319,14 @@ require_once 'config.php';
     * questions will be fetched from Assessment Wiki depending on topics specified from the teacher
      */ 
     function fetchWikiQuestionsAndPushToSMILE(questionText,choices,correctResponseID,pageID,smileServer) {
-        // add assess wiki user to SMILE with specific name and IP
-        var WikiUserName = "Wiki";
+        // add assess wiki user to SMILE with spe"Wiki"cific name and IP
+        var wikiUserName = document.getElementById("smileusername").value;
         var WikiIP = "192.168.1.7";
         var SMILEpushurl = smileServer + '/SMILE/pushmsg.php';
         var JSONUser = {
             "TYPE": "HAIL",
             "IP": WikiIP,
-            "NAME": WikiUserName
+            "NAME": wikiUserName
         };
         var correctAns = 1;
         if(correctResponseID=='option_0'){
@@ -341,7 +350,7 @@ require_once 'config.php';
                     // push assess questions to SMILE
                         var jsonQuestion = {
                             "TYPE": "QUESTION",
-                            "NAME": "Wiki",
+                            "NAME": wikiUserName,
                             "IP": "192.168.1.7",
                             "Q": questionText,
                             "O1": choices[0],
