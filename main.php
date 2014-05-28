@@ -367,7 +367,7 @@ then push them to SMILE session
             {
                 getEditToken(request);
             };
-            var url = "<?php echo $wikiServer.$mediawikiPath; ?>" + "/api.php?action=query&prop=info|revisions&intoken=edit&titles=Main%20Page";
+            var url = "<?php echo $wikiServer.$wikiPath; ?>" + "/api.php?action=query&prop=info|revisions&intoken=edit&titles=Main%20Page";
             request.open('GET', url, false);
             request.send(null);
         }
@@ -413,7 +413,7 @@ then push them to SMILE session
     function performEdit(editToken,qtext,qtitle,qid)
     {
         $.ajax({
-        url: '<?php echo $wikiServer.$mediawikiPath; ?>' + '/api.php',
+        url: '<?php echo $wikiServer.$wikiPath; ?>' + '/api.php',
         data: {
             format: 'json',
             action: 'edit',
